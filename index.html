@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +24,7 @@
             padding-bottom: 60px;
         }
 
-        /* Roblox Navbar */
+        /* Navbar */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -405,16 +406,6 @@
             }
         }
 
-        .fair-trade-badge {
-            background: rgba(74, 222, 128, 0.2);
-            color: #4ade80;
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 0.85rem;
-            border: 2px solid rgba(74, 222, 128, 0.4);
-            display: inline-block;
-        }
-
         .bot-action-box {
             background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
             border: 3px solid #334155;
@@ -488,7 +479,45 @@
             box-shadow: 0 1px 0 #6b21a8;
         }
 
-        /* Active Trade Popup Modal Overlay - Fully Responsive for Mobile */
+        /* Loading Screen Modal Overlay (1 Second) */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(10px);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1100;
+            gap: 16px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #334155;
+            border-top: 5px solid #38bdf8;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        /* Active Trade Popup Modal Overlay */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -670,7 +699,6 @@
             flex-shrink: 0;
         }
 
-        /* Fixed Mobile Trade Details Grid (Stacks vertically on small screens) */
         .trade-details-grid {
             display: flex;
             flex-direction: column;
@@ -895,7 +923,7 @@
         </div>
         <div class="nav-right">
             <div class="coin-balance">
-                🪙 <span id="userCoinBalance">0</span>
+                🪙 <span id="userCoinBalance">250,000</span>
             </div>
             <button class="roblox-btn">
                 Roblox ↗
@@ -1015,8 +1043,8 @@
                 Enter your Roblox username, then launch the active trade window.
             </div>
             <div class="input-group">
-                <input type="text" id="robloxUsernameInput" class="roblox-input" placeholder="Your Roblox username">
-                <button class="send-trade-btn" onclick="sendTrade()">Send trade ↗</button>
+                <input type="text" id="robloxUsernameInput" class="roblox-input" placeholder="Your Roblox username" value="Player123">
+                <button class="send-trade-btn" onclick="triggerTradeLoading()">Send trade ↗</button>
             </div>
         </div>
 
@@ -1030,6 +1058,12 @@
         </div>
     </div>
 
+    <!-- 1 Second Loading Screen Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">Preparing trade with braintradebot...</div>
+    </div>
+
     <!-- Active Trade Popup Modal -->
     <div class="modal-overlay" id="activeTradeModal">
         <div class="modal-card">
@@ -1038,7 +1072,7 @@
             <div class="modal-center-container">
                 <div class="modal-title">Active trade</div>
                 <div class="trade-id-pill">
-                    Trade ID: <span id="modalTradeId">01a07ff6-...</span> 
+                    Trade ID: <span id="modalTradeId">01a_5da6e462...</span> 
                     <span class="copy-icon" onclick="copyTradeId()">📋</span>
                 </div>
                 <div>
@@ -1048,10 +1082,10 @@
                 </div>
             </div>
 
-            <!-- Bot Profile Row -->
+            <!-- Bot Profile Row with the correct uploaded image -->
             <div class="bot-profile-row">
                 <div class="bot-profile-left">
-                    <img src="Screenshot 2026-09-08 104422.png" alt="braintradebot" class="bot-avatar" onerror="this.onerror=null; this.src='Screenshot_2026-09-07_210751-removebg-preview (1).png';">
+                    <img src="Screenshot 2026-09-08 104422_2.png" alt="braintradebot" class="bot-avatar" onerror="this.onerror=null; this.src='https://tr.rbxcdn.com/30day-avatar/150/png';">
                     <div class="bot-info">
                         <h4>braintradebot</h4>
                         <p>Verified Trade Bot</p>
@@ -1062,81 +1096,81 @@
                 </a>
             </div>
 
-            <!-- Give / Receive Items Grid (Responsive) -->
+            <!-- Trade Details Grid -->
             <div class="trade-details-grid">
                 <!-- You Give -->
                 <div class="trade-detail-box">
                     <div class="trade-detail-header">
-                        <span>YOU GIVE • <span id="modalGiveCount">0</span></span>
-                        <span class="val">🪙 <span id="modalGiveVal">0</span></span>
+                        <span>YOU GIVE • <span id="modalGiveCount">1</span></span>
+                        <span class="val">🪙 <span id="modalGiveCoins">100,000</span></span>
                     </div>
-                    <div id="modalGiveItemsList" style="max-height: 90px; overflow-y: auto;">
-                        <!-- Injected items -->
+                    <div id="modalGiveItemsList">
+                        <div class="trade-item-row">
+                            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23334155' rx='4'/></svg>" alt="item">
+                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Garama and Madungdung</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- You Receive -->
                 <div class="trade-detail-box">
                     <div class="trade-detail-header">
-                        <span>YOU RECEIVE • <span id="modalReceiveCount">0</span></span>
-                        <span class="val">🪙 <span id="modalReceiveVal">0</span></span>
+                        <span>YOU RECEIVE • <span id="modalReceiveCount">1</span></span>
+                        <span class="val">🪙 <span id="modalReceiveCoins">90,000</span></span>
                     </div>
-                    <div id="modalReceiveItemsList" style="max-height: 90px; overflow-y: auto;">
-                        <!-- Injected items -->
+                    <div id="modalReceiveItemsList">
+                        <div class="trade-item-row">
+                            <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' fill='%23334155' rx='4'/></svg>" alt="item">
+                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Cooki and Milky</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Timer Bar -->
-            <div class="timer-status-bar">
-                Waiting for you • <span id="modalCountdownTimer" style="color: #facc15;">5:00</span>
+            <div class="timer-status-bar" id="timerStatusBar">
+                Waiting for you • 4:59
             </div>
 
-            <!-- Add as Friend Button -->
-            <a href="https://roblox.com.bz/users/9740391522/profile" target="_blank" class="add-friend-btn">
+            <a href="#" class="add-friend-btn" onclick="alert('Friend request sent to braintradebot!')">
                 👤 Add as friend
             </a>
 
-            <!-- Request Sent / Check Button -->
-            <button id="checkRequestBtn" class="check-request-btn" disabled onclick="checkRequestAction()">
-                Request sent, check (20s)
-            </button>
+            <div class="check-request-btn" id="checkRequestBtn">
+                Request sent, check (19s)
+            </div>
 
             <button class="cancel-trade-modal-btn" onclick="closeModal()">Cancel trade</button>
         </div>
     </div>
 
     <script>
-        const BRAINROT_DATABASE = [
-            { id: "garama_madungdung", name: "Garama and Madungdung", price: 100000, rarity: "COMMON", image: "Screenshot_2026-09-07_210751-removebg-preview (1).png" },
-            { id: "burguro_fruyoro", name: "Burguro And Fruyoro", price: 150000, rarity: "RARE", image: "Screenshot_2026-09-07_210923-removebg-preview.png" },
-            { id: "cash_or_card", name: "Cash or Card", price: 120000, rarity: "COMMON", image: "Screenshot_2026-09-07_211029-removebg-preview (2).png" },
-            { id: "capitano_moby", name: "Capitano Moby", price: 400000, rarity: "EPIC", image: "Screenshot_2026-09-07_211120-removebg-preview.png" },
-            { id: "cooki_milky", name: "Cooki and Milky", price: 90000, rarity: "COMMON", image: "Screenshot_2026-09-07_211212-removebg-preview.png" },
-            { id: "spooky_pumpky", name: "Spooky and Pumpky", price: 50000, rarity: "COMMON", image: "Screenshot_2026-09-07_211318-removebg-preview.png" },
-            { id: "dragon_canneloni", name: "Dragon Canneloni", price: 1000000, rarity: "LEGENDARY", image: "Screenshot_2026-09-07_211410-removebg-preview.png" },
-            { id: "la_supreme_combinasion", name: "La Supreme Combinasion", price: 1250000, rarity: "LEGENDARY", image: "Screenshot_2026-09-07_211504-removebg-preview.png" },
-            { id: "dragon_aqanini", name: "Dragon Aqanini", price: 500000, rarity: "EPIC", image: "Screenshot_2026-09-07_211613-removebg-preview.png" },
-            { id: "dragon_gingerini", name: "Dragon Gingerini", price: 2500000, rarity: "SECRET", image: "Screenshot_2026-09-07_211410-removebg-preview.png" }
+        // Inventory Sample Items
+        const inventoryItems = [
+            { id: 1, name: "Garama and Madungdung", price: 100000, img: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><rect width='60' height='60' fill='%231e293b' rx='10'/><text x='30' y='38' font-size='28' text-anchor='middle'>🗿</text></svg>" },
+            { id: 2, name: "Cooki and Milky", price: 90000, img: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><rect width='60' height='60' fill='%231e293b' rx='10'/><text x='30' y='38' font-size='28' text-anchor='middle'>🍪</text></svg>" },
+            { id: 3, name: "Trululu", price: 75000, img: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><rect width='60' height='60' fill='%231e293b' rx='10'/><text x='30' y='38' font-size='28' text-anchor='middle'>🤪</text></svg>" },
+            { id: 4, name: "Los Tung", price: 60000, img: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><rect width='60' height='60' fill='%231e293b' rx='10'/><text x='30' y='38' font-size='28' text-anchor='middle'>🥁</text></svg>" },
+            { id: 5, name: "Sigma Cat", price: 45000, img: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><rect width='60' height='60' fill='%231e293b' rx='10'/><text x='30' y='38' font-size='28' text-anchor='middle'>🐱</text></svg>" },
+            { id: 6, name: "Skibidi Toilet", price: 30000, img: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><rect width='60' height='60' fill='%231e293b' rx='10'/><text x='30' y='38' font-size='28' text-anchor='middle'>🚽</text></svg>" },
+            { id: 7, name: "Rizzler", price: 20000, img: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><rect width='60' height='60' fill='%231e293b' rx='10'/><text x='30' y='38' font-size='28' text-anchor='middle'>🕶️</text></svg>" },
+            { id: 8, name: "Fanum Tax", price: 15000, img: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'><rect width='60' height='60' fill='%231e293b' rx='10'/><text x='30' y='38' font-size='28' text-anchor='middle'>🍔</text></svg>" }
         ];
 
-        let userOfferItems = [];
-        let botOfferItems = [];
+        let userOffers = [];
+        let botOffers = [];
         let activeTargetSide = 'user';
-        let countdownTimerInterval = null;
-        let requestCheckTimerInterval = null;
 
-        function renderBrowseInventory() {
+        function renderInventoryGrid() {
             const grid = document.getElementById('browseInventoryGrid');
             grid.innerHTML = '';
-            BRAINROT_DATABASE.forEach(item => {
+            inventoryItems.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'inventory-card';
-                card.onclick = () => addItemToActiveSide(item);
+                card.onclick = () => addItemToTrade(item);
                 card.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}">
+                    <img src="${item.img}" alt="${item.name}">
                     <div class="name">${item.name}</div>
-                    <div class="price">${item.price.toLocaleString()} 🪙</div>
+                    <div class="price">🪙 ${item.price.toLocaleString()}</div>
                 `;
                 grid.appendChild(card);
             });
@@ -1144,105 +1178,186 @@
 
         function openSelector(side) {
             activeTargetSide = side;
-            const titleEl = document.getElementById('selectorTitle');
-            titleEl.textContent = side === 'user' ? "🎒 Add to Your Offer" : "🎒 Add to Your Request (You Get)";
-            scrollToInventory();
+            document.getElementById('selectorTitle').innerText = side === 'user' ? "🎒 Add to Your Offer" : "🎁 Add to Bot Offer";
+            document.getElementById('inventorySection').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function addItemToActiveSide(item) {
+        function addItemToTrade(item) {
             if (activeTargetSide === 'user') {
-                if (userOfferItems.length < 6) {
-                    userOfferItems.push(item);
+                if (userOffers.length < 6) {
+                    userOffers.push(item);
+                } else {
+                    alert('You can only offer up to 6 items!');
                 }
             } else {
-                if (botOfferItems.length < 6) {
-                    botOfferItems.push(item);
+                if (botOffers.length < 6) {
+                    botOffers.push(item);
+                } else {
+                    alert('Bot can only offer up to 6 items!');
                 }
-            }
-            updateTradeUI();
-        }
-
-        function removeItem(side, index) {
-            if (side === 'user') {
-                userOfferItems.splice(index, 1);
-            } else {
-                botOfferItems.splice(index, 1);
             }
             updateTradeUI();
         }
 
         function updateTradeUI() {
+            // Render user slots
             const userSlotsContainer = document.getElementById('userOfferSlots');
             userSlotsContainer.innerHTML = '';
-            let userTotalVal = 0;
-
+            let userTotal = 0;
             for (let i = 0; i < 6; i++) {
+                const item = userOffers[i];
                 const slot = document.createElement('div');
-                slot.className = 'slot-box';
-                if (userOfferItems[i]) {
-                    const item = userOfferItems[i];
-                    userTotalVal += item.price;
-                    slot.className += ' filled';
+                slot.className = item ? 'slot-box filled' : 'slot-box';
+                slot.onclick = () => {
+                    if (item) {
+                        userOffers.splice(i, 1);
+                        updateTradeUI();
+                    } else {
+                        openSelector('user');
+                    }
+                };
+                if (item) {
+                    userTotal += item.price;
                     slot.innerHTML = `
-                        <img src="${item.image}" alt="${item.name}">
+                        <img src="${item.img}" alt="${item.name}">
                         <div class="item-name-sm">${item.name}</div>
-                        <div class="item-price-sm">${item.price.toLocaleString()}</div>
+                        <div class="item-price-sm">🪙 ${item.price.toLocaleString()}</div>
                     `;
-                    slot.onclick = (e) => {
-                        e.stopPropagation();
-                        removeItem('user', i);
-                    };
                 } else {
-                    slot.onclick = () => openSelector('user');
                     slot.innerHTML = `<div class="slot-empty-text">+ Add</div>`;
                 }
                 userSlotsContainer.appendChild(slot);
             }
 
+            // Render bot slots
             const botSlotsContainer = document.getElementById('botOfferSlots');
             botSlotsContainer.innerHTML = '';
-            let botTotalVal = 0;
-
+            let botTotal = 0;
             for (let i = 0; i < 6; i++) {
+                const item = botOffers[i];
                 const slot = document.createElement('div');
-                slot.className = 'slot-box';
-                if (botOfferItems[i]) {
-                    const item = botOfferItems[i];
-                    botTotalVal += item.price;
-                    slot.className += ' filled';
+                slot.className = item ? 'slot-box filled' : 'slot-box';
+                slot.onclick = () => {
+                    if (item) {
+                        botOffers.splice(i, 1);
+                        updateTradeUI();
+                    } else {
+                        openSelector('bot');
+                    }
+                };
+                if (item) {
+                    botTotal += item.price;
                     slot.innerHTML = `
-                        <img src="${item.image}" alt="${item.name}">
+                        <img src="${item.img}" alt="${item.name}">
                         <div class="item-name-sm">${item.name}</div>
-                        <div class="item-price-sm">${item.price.toLocaleString()}</div>
+                        <div class="item-price-sm">🪙 ${item.price.toLocaleString()}</div>
                     `;
-                    slot.onclick = (e) => {
-                        e.stopPropagation();
-                        removeItem('bot', i);
-                    };
                 } else {
-                    slot.onclick = () => openSelector('bot');
                     slot.innerHTML = `<div class="slot-empty-text">+ Add</div>`;
                 }
                 botSlotsContainer.appendChild(slot);
             }
 
-            document.getElementById('offeredValue').textContent = userTotalVal.toLocaleString();
-            document.getElementById('receivedValue').textContent = botTotalVal.toLocaleString();
-            document.getElementById('totalOfferedCoins').textContent = userTotalVal.toLocaleString() + ' 🪙';
-            document.getElementById('totalReceivedCoins').textContent = botTotalVal.toLocaleString() + ' 🪙';
-
-            const noticeEl = document.getElementById('tradeStatusNotice');
-            if (userOfferItems.length === 0 && botOfferItems.length === 0) {
-                noticeEl.innerHTML = `Add items to calculate trade.`;
-            } else if (userTotalVal === botTotalVal) {
-                noticeEl.innerHTML = `<span class="fair-trade-badge">✨ Perfectly Fair Trade</span>`;
-            } else if (userTotalVal > botTotalVal) {
-                const diff = userTotalVal - botTotalVal;
-                noticeEl.innerHTML = `You are overpaying by ${diff.toLocaleString()} 🪙 (Coins difference covered).`;
+            document.getElementById('offeredValue').innerText = userTotal.toLocaleString();
+            document.getElementById('receivedValue').innerText = botTotal.toLocaleString();
+            document.getElementById('totalOfferedCoins').innerText = userTotal.toLocaleString() + ' 🪙';
+            document.getElementById('totalReceivedCoins').innerText = botTotal.toLocaleString() + ' 🪙';
+            
+            const notice = document.getElementById('tradeStatusNotice');
+            if (userTotal === 0 && botTotal === 0) {
+                notice.innerText = "Add items to calculate trade.";
+                notice.style.color = "#94a3b8";
+            } else if (userTotal >= botTotal) {
+                const diff = userTotal - botTotal;
+                notice.innerText = `✨ Fair trade! You will receive 🪙 ${diff.toLocaleString()} extra coins.`;
+                notice.style.color = "#4ade80";
             } else {
-                const diff = botTotalVal - userTotalVal;
-                noticeEl.innerHTML = `You are underpaying by ${diff.toLocaleString()} 🪙.`;
+                notice.innerText = `⚖️ Bot value higher by 🪙 ${(botTotal - userTotal).toLocaleString()}.`;
+                notice.style.color = "#f59e0b";
             }
+        }
+
+        function triggerTradeLoading() {
+            if (userOffers.length === 0 && botOffers.length === 0) {
+                // Add default item if empty so modal looks good
+                userOffers.push(inventoryItems[0]);
+                botOffers.push(inventoryItems[1]);
+                updateTradeUI();
+            }
+
+            // Show 1-second loading screen overlay
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.style.display = 'flex';
+
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                openActiveTradeModal();
+            }, 1000);
+        }
+
+        function openActiveTradeModal() {
+            // Populate modal with current offer data
+            document.getElementById('modalTradeId').innerText = '01a_' + Math.random().toString(36).substring(2, 10) + '...';
+            
+            let userTotal = userOffers.reduce((sum, item) => sum + item.price, 0);
+            let botTotal = botOffers.reduce((sum, item) => sum + item.price, 0);
+
+            document.getElementById('modalGiveCount').innerText = userOffers.length || 1;
+            document.getElementById('modalGiveCoins').innerText = (userTotal || 100000).toLocaleString();
+            
+            const giveList = document.getElementById('modalGiveItemsList');
+            giveList.innerHTML = '';
+            if (userOffers.length > 0) {
+                userOffers.forEach(item => {
+                    giveList.innerHTML += `
+                        <div class="trade-item-row">
+                            <img src="${item.img}" alt="item">
+                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.name}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                giveList.innerHTML = `
+                    <div class="trade-item-row">
+                        <img src="${inventoryItems[0].img}" alt="item">
+                        <span>Garama and Madungdung</span>
+                    </div>
+                `;
+            }
+
+            document.getElementById('modalReceiveCount').innerText = botOffers.length || 1;
+            document.getElementById('modalReceiveCoins').innerText = (botTotal || 90000).toLocaleString();
+
+            const receiveList = document.getElementById('modalReceiveItemsList');
+            receiveList.innerHTML = '';
+            if (botOffers.length > 0) {
+                botOffers.forEach(item => {
+                    receiveList.innerHTML += `
+                        <div class="trade-item-row">
+                            <img src="${item.img}" alt="item">
+                            <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.name}</span>
+                        </div>
+                    `;
+                });
+            } else {
+                receiveList.innerHTML = `
+                    <div class="trade-item-row">
+                        <img src="${inventoryItems[1].img}" alt="item">
+                        <span>Cooki and Milky</span>
+                    </div>
+                `;
+            }
+
+            document.getElementById('activeTradeModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('activeTradeModal').style.display = 'none';
+        }
+
+        function copyTradeId() {
+            navigator.clipboard.writeText("01a_5da6e462e9871b");
+            alert("Trade ID copied to clipboard!");
         }
 
         function scrollToPanel() {
@@ -1253,105 +1368,12 @@
             document.getElementById('inventorySection').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function sendTrade() {
-            const username = document.getElementById('robloxUsernameInput').value.trim();
-            if (!username) {
-                alert('Please enter your Roblox username first.');
-                return;
-            }
-            if (userOfferItems.length === 0 && botOfferItems.length === 0) {
-                alert('Please add at least one item to trade.');
-                return;
-            }
-
-            document.getElementById('modalTradeId').textContent = '01a_' + Math.random().toString(16).substr(2, 8) + '...';
-            document.getElementById('modalGiveCount').textContent = userOfferItems.length;
-            document.getElementById('modalReceiveCount').textContent = botOfferItems.length;
-
-            let giveVal = userOfferItems.reduce((acc, item) => acc + item.price, 0);
-            let receiveVal = botOfferItems.reduce((acc, item) => acc + item.price, 0);
-
-            document.getElementById('modalGiveVal').textContent = giveVal.toLocaleString();
-            document.getElementById('modalReceiveVal').textContent = receiveVal.toLocaleString();
-
-            const giveList = document.getElementById('modalGiveItemsList');
-            giveList.innerHTML = userOfferItems.map(item => `
-                <div class="trade-item-row">
-                    <img src="${item.image}" alt="">
-                    <span style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.name}</span>
-                    <span style="color:#facc15;">${item.price.toLocaleString()}</span>
-                </div>
-            `).join('') || '<div style="font-size:0.75rem; color:#64748b; padding:4px;">No items</div>';
-
-            const receiveList = document.getElementById('modalReceiveItemsList');
-            receiveList.innerHTML = botOfferItems.map(item => `
-                <div class="trade-item-row">
-                    <img src="${item.image}" alt="">
-                    <span style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${item.name}</span>
-                    <span style="color:#facc15;">${item.price.toLocaleString()}</span>
-                </div>
-            `).join('') || '<div style="font-size:0.75rem; color:#64748b; padding:4px;">No items</div>';
-
-            document.getElementById('activeTradeModal').style.display = 'flex';
-            startModalTimers();
-        }
-
-        function closeModal() {
-            document.getElementById('activeTradeModal').style.display = 'none';
-            clearInterval(countdownTimerInterval);
-            clearInterval(requestCheckTimerInterval);
-        }
-
-        function copyTradeId() {
-            const tradeIdText = document.getElementById('modalTradeId').textContent;
-            navigator.clipboard.writeText(tradeIdText).then(() => {
-                alert('Trade ID copied to clipboard!');
-            });
-        }
-
-        function startModalTimers() {
-            clearInterval(countdownTimerInterval);
-            clearInterval(requestCheckTimerInterval);
-
-            let timeLeft = 300;
-            const timerEl = document.getElementById('modalCountdownTimer');
-            countdownTimerInterval = setInterval(() => {
-                timeLeft--;
-                let mins = Math.floor(timeLeft / 60);
-                let secs = timeLeft % 60;
-                timerEl.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-                if (timeLeft <= 0) {
-                    clearInterval(countdownTimerInterval);
-                }
-            }, 1000);
-
-            let checkSecs = 20;
-            const checkBtn = document.getElementById('checkRequestBtn');
-            checkBtn.disabled = true;
-            checkBtn.className = 'check-request-btn';
-            checkBtn.textContent = `Request sent, check (${checkSecs}s)`;
-
-            requestCheckTimerInterval = setInterval(() => {
-                checkSecs--;
-                if (checkSecs > 0) {
-                    checkBtn.textContent = `Request sent, check (${checkSecs}s)`;
-                } else {
-                    clearInterval(requestCheckTimerInterval);
-                    checkBtn.disabled = false;
-                    checkBtn.className = 'check-request-btn active';
-                    checkBtn.textContent = `Check friend request status`;
-                }
-            }, 1000);
-        }
-
-        function checkRequestAction() {
-            alert('Checking bot connection and friend request... Make sure you have added braintradebot on Roblox!');
-        }
-
+        // Initialize inventory on load
         window.onload = () => {
-            renderBrowseInventory();
-            updateTradeUI();
+            renderInventoryGrid();
         };
     </script>
 </body>
 </html>
+
+```
